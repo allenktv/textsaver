@@ -10,17 +10,17 @@
     <string name="add_text_hint">Add Text Here</string>
     <string name="text_deleted">Text deleted</string>
     <string name="text_saved">Text saved</string>
+    <string name="copy_clipboard">Copy to clipboard</string>
+    <string name="copied">Copied to clipboard</string>
+    <string name="delete_all_messages">Delete all messages?</string>
 
     <!-- Menu Strings -->
-    <string name="copy_clipboard">Copy to Clipboard</string>
-    <string name="copied">Copied to Clipboard</string>
     <string name="share_using">Share using</string>
     <string name="delete_all">Delete all</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="share">Share</string>
     <string name="save">Save</string>
-    <string name="delete_all_messages">Delete all messages?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 

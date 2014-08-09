@@ -18,10 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.kbear.textsaver.activities.MainActivity;
 import com.kbear.textsaver.R;
+import com.kbear.textsaver.activities.TextSaverApplication;
 import com.kbear.textsaver.utils.MessageService;
 import com.kbear.textsaver.utils.ShareHelper;
+import com.kbear.textsaver.utils.TrackingConstants;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -67,7 +70,7 @@ public class TextListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (addTextET.getText().length() > 0) {
-                    addText(addTextET.getText().toString());
+                    addMessage(addTextET.getText().toString());
                     addTextET.getText().clear();
                 } else {
                     mActivity.showToast(getString(R.string.empty_text));
@@ -78,6 +81,9 @@ public class TextListFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+                        .setAction(TrackingConstants.COPY_CLIPBOARD_KEY)
+                        .build());
                 ShareHelper.copyToClipboard(mActivity, mTexts.get(i));
                 mActivity.showToast(getString(R.string.copied));
             }
@@ -99,7 +105,7 @@ public class TextListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadAllTexts();
+        loadAllMessages();
     }
 
     @Override
@@ -119,19 +125,25 @@ public class TextListFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addText(String s) {
+    private void addMessage(String s) {
+        ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+                .setAction(TrackingConstants.ADD_KEY)
+                .build());
         mTexts.add(s);
         MessageService.saveAllMessages(new HashSet<String>(mTexts));
         mAdapter.notifyDataSetChanged();
     }
 
-    private void deleteText(String s) {
+    private void deleteMessage(String s) {
+        ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+            .setAction(TrackingConstants.DELETE_KEY)
+            .build());
         mTexts.remove(s);
         MessageService.saveAllMessages(new HashSet<String>(mTexts));
         mAdapter.notifyDataSetChanged();
     }
 
-    private void loadAllTexts() {
+    private void loadAllMessages() {
         mAdapter.clear();
         if (MessageService.getAllMessages() != null) {
             mTexts.addAll(MessageService.getAllMessages());
@@ -145,6 +157,9 @@ public class TextListFragment extends Fragment {
         alertDialogBuilder
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+                                .setAction(TrackingConstants.DELETE_ALL_KEY)
+                                .build());
                         MessageService.deleteAllMessages();
                         mTexts.clear();
                         mAdapter.notifyDataSetChanged();
@@ -177,13 +192,16 @@ public class TextListFragment extends Fragment {
 
         switch (item.getItemId()) {
             case SHARE_MESSAGE:
+                ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+                        .setAction(TrackingConstants.SHARE_KEY)
+                        .build());
                 ShareHelper.shareMessage(mActivity, message);
                 break;
             case EDIT_MESSAGE:
                 mActivity.showFragment(EditMessageFragment.newInstance(message), true);
                 break;
             case DELETE_MESSAGE:
-                deleteText(message);
+                deleteMessage(message);
                 mActivity.showToast(getString(R.string.text_deleted));
                 break;
         }

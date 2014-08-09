@@ -1,19 +1,16 @@
 package com.kbear.textsaver.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kbear.textsaver.R;
 import com.kbear.textsaver.fragments.TextListFragment;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -11,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.kbear.textsaver.R;
 import com.kbear.textsaver.activities.MainActivity;
+import com.kbear.textsaver.activities.TextSaverApplication;
 import com.kbear.textsaver.utils.MessageService;
+import com.kbear.textsaver.utils.TrackingConstants;
 
 /**
  * Created by allen on 8/9/14.
@@ -73,6 +76,9 @@ public class EditMessageFragment extends Fragment {
         switch (id) {
             case R.id.save_edit:
                 if (mEditText.getText().length() > 0) {
+                    ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+                            .setAction(TrackingConstants.EDIT_KEY)
+                            .build());
                     MessageService.saveMessage(mEditMessage, mEditText.getText().toString());
                     mActivity.showToast(getString(R.string.text_saved));
                     mActivity.getFragmentManager().popBackStackImmediate();
@@ -81,6 +87,9 @@ public class EditMessageFragment extends Fragment {
                 }
                 break;
             case R.id.delete_edit:
+                ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
+                        .setAction(TrackingConstants.DELETE_KEY)
+                        .build());
                 MessageService.deleteMessage(mEditMessage);
                 mActivity.showToast(getString(R.string.text_deleted));
                 mActivity.getFragmentManager().popBackStackImmediate();
