@@ -18,13 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.kbear.textsaver.activities.MainActivity;
 import com.kbear.textsaver.R;
-import com.kbear.textsaver.activities.TextSaverApplication;
 import com.kbear.textsaver.utils.MessageService;
 import com.kbear.textsaver.utils.ShareHelper;
 import com.kbear.textsaver.utils.TrackingConstants;
+import com.kbear.textsaver.utils.TrackingService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -81,9 +80,7 @@ public class TextListFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
-                        .setAction(TrackingConstants.COPY_CLIPBOARD_KEY)
-                        .build());
+                TrackingService.getInstance().sendEvent(TrackingConstants.COPY_CLIPBOARD_KEY);
                 ShareHelper.copyToClipboard(mActivity, mTexts.get(i));
                 mActivity.showToast(getString(R.string.copied));
             }
@@ -126,18 +123,14 @@ public class TextListFragment extends Fragment {
     }
 
     private void addMessage(String s) {
-        ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
-                .setAction(TrackingConstants.ADD_KEY)
-                .build());
+        TrackingService.getInstance().sendEvent(TrackingConstants.ADD_KEY);
         mTexts.add(s);
         MessageService.saveAllMessages(new HashSet<String>(mTexts));
         mAdapter.notifyDataSetChanged();
     }
 
     private void deleteMessage(String s) {
-        ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
-            .setAction(TrackingConstants.DELETE_KEY)
-            .build());
+        TrackingService.getInstance().sendEvent(TrackingConstants.DELETE_KEY);
         mTexts.remove(s);
         MessageService.saveAllMessages(new HashSet<String>(mTexts));
         mAdapter.notifyDataSetChanged();
@@ -157,9 +150,7 @@ public class TextListFragment extends Fragment {
         alertDialogBuilder
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
-                                .setAction(TrackingConstants.DELETE_ALL_KEY)
-                                .build());
+                        TrackingService.getInstance().sendEvent(TrackingConstants.DELETE_ALL_KEY);
                         MessageService.deleteAllMessages();
                         mTexts.clear();
                         mAdapter.notifyDataSetChanged();
@@ -192,9 +183,7 @@ public class TextListFragment extends Fragment {
 
         switch (item.getItemId()) {
             case SHARE_MESSAGE:
-                ((TextSaverApplication)mActivity.getApplication()).getTracker().send(new HitBuilders.EventBuilder()
-                        .setAction(TrackingConstants.SHARE_KEY)
-                        .build());
+                TrackingService.getInstance().sendEvent(TrackingConstants.SHARE_KEY);
                 ShareHelper.shareMessage(mActivity, message);
                 break;
             case EDIT_MESSAGE:

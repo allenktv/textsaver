@@ -1,7 +1,6 @@
 package com.kbear.textsaver.activities;
 
 import android.app.Activity;
-import android.os.Bundle;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 
@@ -9,12 +8,6 @@ import com.google.android.gms.analytics.GoogleAnalytics;
  * Created by allen on 8/9/14.
  */
 public class BaseActivity extends Activity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((TextSaverApplication)this.getApplication()).getTracker();
-    }
 
     @Override
     protected void onStart() {
