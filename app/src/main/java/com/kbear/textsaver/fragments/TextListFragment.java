@@ -3,6 +3,7 @@ package com.kbear.textsaver.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,11 +30,14 @@ import java.util.HashSet;
  * Created by allen on 8/9/14.
  */
 public class TextListFragment extends Fragment {
-    MainActivity mActivity;
-    ListView mListView;
-    ArrayAdapter<String> mAdapter;
 
-    ArrayList<String> mTexts;
+    private MainActivity mActivity;
+    private ArrayAdapter<String> mAdapter;
+    private ArrayList<String> mTexts;
+
+    private static final int SHARE_MESSAGE = 0;
+    private static final int EDIT_MESSAGE = 1;
+    private static final int DELETE_MESSAGE = 2;
 
     @Override
     public void onAttach(Activity activity) {
@@ -54,7 +58,7 @@ public class TextListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.layout_texlistfragment, container, false);
         final EditText addTextET = (EditText)v.findViewById(R.id.add_text_ET);
-        mListView = (ListView)v.findViewById(android.R.id.list);
+        ListView mListView = (ListView)v.findViewById(android.R.id.list);
         Button sendButton = (Button)v.findViewById(R.id.send_button);
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(v.findViewById(android.R.id.empty));
@@ -87,6 +91,7 @@ public class TextListFragment extends Fragment {
             }
         });
 
+        registerForContextMenu(mListView);
         loadAllTexts();
 
         return v;
@@ -117,6 +122,12 @@ public class TextListFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
+    private void deleteText(String s) {
+        mTexts.remove(s);
+        MessageService.saveAllMessages(new HashSet<String>(mTexts));
+        mAdapter.notifyDataSetChanged();
+    }
+
     private void loadAllTexts() {
         if (MessageService.getAllMessages() != null) {
             mTexts.addAll(MessageService.getAllMessages());
@@ -128,5 +139,37 @@ public class TextListFragment extends Fragment {
         Toast toast = Toast.makeText(mActivity, string, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.show();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        String title = mAdapter.getItem(info.position);
+        menu.setHeaderTitle(title);
+        menu.add(0, SHARE_MESSAGE, 0, getString(R.string.share));
+        menu.add(0, EDIT_MESSAGE, 0, getString(R.string.edit));
+        menu.add(0, DELETE_MESSAGE, 0, getString(R.string.delete));
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        String message = mTexts.get(info.position);
+
+        switch (item.getItemId()) {
+            case SHARE_MESSAGE:
+                ShareHelper.shareMessage(mActivity, message);
+                break;
+            case EDIT_MESSAGE:
+
+                break;
+            case DELETE_MESSAGE:
+                deleteText(message);
+                showToast(getString(R.string.text_deleted));
+                break;
+        }
+        System.out.println(item.getTitle().toString());
+        return super.onContextItemSelected(item);
     }
 }

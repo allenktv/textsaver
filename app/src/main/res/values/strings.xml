@@ -5,14 +5,19 @@
     <string name="app_name">TextSaver</string>
 
     <!-- Text Strings -->
-    <string name="copy_clipboard">Copy to Clipboard</string>
-    <string name="copied">Copied to Clipboard</string>
-    <string name="share">Share</string>
     <string name="add_new">Add new text</string>
     <string name="delete_text">Delete text</string>
     <string name="add_text_hint">Add Text Here</string>
+    <string name="text_deleted">Text deleted</string>
+
+    <!-- Menu Strings -->
+    <string name="copy_clipboard">Copy to Clipboard</string>
+    <string name="copied">Copied to Clipboard</string>
     <string name="share_using">Share using</string>
     <string name="delete_all">Delete all</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="share">Share</string>
 
     <!-- Errors -->
     <string name="no_texts">No saved texts</string>
