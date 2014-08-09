@@ -1,10 +1,11 @@
 package com.kbear.textsaver.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.kbear.textsaver.activities.MainActivity;
 import com.kbear.textsaver.R;
@@ -56,7 +56,7 @@ public class TextListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.layout_texlistfragment, container, false);
+        View v = inflater.inflate(R.layout.textlist_fragment, container, false);
         final EditText addTextET = (EditText)v.findViewById(R.id.add_text_ET);
         ListView mListView = (ListView)v.findViewById(android.R.id.list);
         Button sendButton = (Button)v.findViewById(R.id.send_button);
@@ -70,7 +70,7 @@ public class TextListFragment extends Fragment {
                     addText(addTextET.getText().toString());
                     addTextET.getText().clear();
                 } else {
-                    showToast(getString(R.string.empty_text));
+                    mActivity.showToast(getString(R.string.empty_text));
                 }
             }
         });
@@ -79,7 +79,7 @@ public class TextListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ShareHelper.copyToClipboard(mActivity, mTexts.get(i));
-                showToast(getString(R.string.copied));
+                mActivity.showToast(getString(R.string.copied));
             }
         });
 
@@ -92,9 +92,14 @@ public class TextListFragment extends Fragment {
         });
 
         registerForContextMenu(mListView);
-        loadAllTexts();
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadAllTexts();
     }
 
     @Override
@@ -108,9 +113,7 @@ public class TextListFragment extends Fragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_delete_all:
-                MessageService.deleteAllMessages();
-                mTexts.clear();
-                mAdapter.notifyDataSetChanged();
+                showDeleteDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -129,16 +132,31 @@ public class TextListFragment extends Fragment {
     }
 
     private void loadAllTexts() {
+        mAdapter.clear();
         if (MessageService.getAllMessages() != null) {
             mTexts.addAll(MessageService.getAllMessages());
             mAdapter.notifyDataSetChanged();
         }
     }
 
-    private void showToast(String string) {
-        Toast toast = Toast.makeText(mActivity, string, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.show();
+    private void showDeleteDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
+        alertDialogBuilder.setTitle(getString(R.string.delete_all_messages));
+        alertDialogBuilder
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        MessageService.deleteAllMessages();
+                        mTexts.clear();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no),new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -162,14 +180,13 @@ public class TextListFragment extends Fragment {
                 ShareHelper.shareMessage(mActivity, message);
                 break;
             case EDIT_MESSAGE:
-
+                mActivity.showFragment(EditMessageFragment.newInstance(message), true);
                 break;
             case DELETE_MESSAGE:
                 deleteText(message);
-                showToast(getString(R.string.text_deleted));
+                mActivity.showToast(getString(R.string.text_deleted));
                 break;
         }
-        System.out.println(item.getTitle().toString());
         return super.onContextItemSelected(item);
     }
 }

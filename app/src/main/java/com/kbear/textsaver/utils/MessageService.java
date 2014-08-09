@@ -8,9 +8,19 @@ import java.util.Set;
 public class MessageService {
     private static final String key = "TextSaverTexts";
 
-    public static void saveMessage(String s) {
-        SharedPreferencesHelper.getInstance().setPreference(key, s);
+    public static void saveMessage(String old, String s) {
+        Set<String> strings = getAllMessages();
+        strings.remove(old);
+        strings.add(s);
+        saveAllMessages(strings);
     }
+
+    public static void deleteMessage(String s) {
+        Set<String> strings = getAllMessages();
+        strings.remove(s);
+        saveAllMessages(strings);
+    }
+
 
     public static Set<String> getAllMessages() {
         return SharedPreferencesHelper.getInstance().getStringSet(key);
