@@ -7,16 +7,17 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/add_text_ET"
-            android:layout_width="100dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:inputType="textLongMessage"
-            android:singleLine="false" />
+            android:inputType="textMultiLine"
+            android:lines="2"
+            android:hint="@string/add_text_hint"
+            android:maxLines="6" />
 
         <Button
             android:id="@+id/send_button"
@@ -30,10 +31,13 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="6" />
+        android:layout_weight="5" />
 
-    <View
+    <TextView
         android:id="@android:id/empty"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:textSize="16sp"
+        android:text="@string/no_texts" />
 </LinearLayout>

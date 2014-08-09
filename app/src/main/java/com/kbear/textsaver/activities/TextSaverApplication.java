@@ -1,8 +1,7 @@
 package com.kbear.textsaver.activities;
 
 import android.app.Application;
-
-import com.kbear.textsaver.services.SharedPreferencesHelper;
+import com.kbear.textsaver.utils.SharedPreferencesHelper;
 
 /**
  * Created by allen on 8/9/14.

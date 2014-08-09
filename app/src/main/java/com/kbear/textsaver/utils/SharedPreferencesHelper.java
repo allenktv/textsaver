@@ -1,4 +1,4 @@
-package com.kbear.textsaver.services;
+package com.kbear.textsaver.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -35,13 +35,8 @@ public class SharedPreferencesHelper {
         sEditor.commit();
     }
 
-    public void delete(String key) {
-        sEditor.remove(key);
-        sEditor.commit();
-    }
-
-    public void deleteAll() {
-        sEditor.clear();
+    public void setPreference(String key, boolean flag) {
+        sEditor.putBoolean(key, flag);
         sEditor.commit();
     }
 
@@ -53,8 +48,21 @@ public class SharedPreferencesHelper {
         return sSharedPreferences.getStringSet(key, null);
     }
 
+    public boolean getBoolean(String key) {
+        return sSharedPreferences.getBoolean(key, false);
+    }
+
     public boolean contains(String key) {
         return sSharedPreferences.contains(key);
     }
 
+    public void delete(String key) {
+        sEditor.remove(key);
+        sEditor.commit();
+    }
+
+    public void deleteAll() {
+        sEditor.clear();
+        sEditor.commit();
+    }
 }
